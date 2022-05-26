@@ -1,0 +1,22 @@
+
+cd config
+bash create_custom_model.sh 2
+
+python train_test_split.py --img_dir data/waste/all_images --split_pct 5 --img_ext jpg
+
+python voc2yolo.py --img_dir data/waste/all_images --classes "metal" "plastic"
+
+python train_test_split_text.py --img_dir waste --img_ext jpg
+
+
+
+python train.py --model_def config/yolov3-waste.cfg --data_config config/waste.data
+
+python train.py --model_def config/yolov3-waste.cfg --data_config config/waste.data --pretrained_weights checkpoints/yolov3_ckpt_18.pth
+
+python test.py --model_def config/yolov3-dna.cfg --weights_path dna_checkpoints/yolov3_ckpt_25.pth --data_config config/dna.data --class_path data/dna/classes.names
+
+python detect.py --image_folder data/waste/samples/ --model_def config/yolov3-waste.cfg --weights_path tiny_waste_checkpoints/yolov3_ckpt_100_6000.pth --class_path data/waste/classes.names --conf_thres 0.9
+python detect.py --image_folder data/waste/samples/ --model_def config/yolov3-waste.cfg --weights_path checkpoints/yolov3_ckpt_99.pth --class_path data/waste/classes.names --conf_thres 0.9
+
+

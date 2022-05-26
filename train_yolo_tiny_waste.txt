@@ -1,0 +1,15 @@
+
+cd config
+bash create_custom_tiny_model.sh 1
+
+cd ..
+python train_test_split.py --img_dir data/hand/all_images --split_pct 5 --img_ext jpg
+python voc2yolo.py --img_dir data/hand/all_images --classes "hand"
+# python train_test_split_text.py --img_dir hand --img_ext jpg
+
+python train.py --model_def config/yolov3-tiny-hand.cfg --data_config config/hand.data
+python train.py --model_def config/yolov3-tiny-waste.cfg --data_config config/waste.data --pretrained_weights checkpoints/yolov3_ckpt_415.pth
+python test.py --model_def config/yolov3-tiny-waste.cfg --weights_path checkpoints/yolov3_ckpt_415.pth --data_config config/waste.data --class_path data/waste/classes.names
+python detect.py --image_folder data/waste/samples/ --model_def config/yolov3-tiny-waste.cfg --weights_path checkpoints/yolov3_ckpt_415.pth --class_path data/waste/classes.names
+
+
